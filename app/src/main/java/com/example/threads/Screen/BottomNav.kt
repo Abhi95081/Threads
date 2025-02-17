@@ -31,7 +31,7 @@ fun BottomNav(navHostController: NavHostController) {
         NavHost(navController = navController1, startDestination = Routes.Home.routes,
             modifier = Modifier.padding(innerPadding)
             ){
-            composable(route=Routes.Home.routes){
+            composable(Routes.Home.routes){
                 Home()
             }
             composable(Routes.Search.routes) {
@@ -59,6 +59,12 @@ fun MyBottomBar(navController: NavHostController){
     val currentRoute = backStackEntry?.destination?.route
 
     val list = listOf(
+
+        BottomNavItem(
+            "home",
+            Routes.Home.routes,
+            Icons.Rounded.Home
+        ),
         BottomNavItem(
             "Search",
             Routes.Search.routes,
