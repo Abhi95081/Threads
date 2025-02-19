@@ -1,13 +1,11 @@
 package com.example.threads.Navigation
 
-sealed class Routes(val routes:String) {
-
-    object Home : Routes("home")
-    object Notification : Routes("notification")
-    object profile : Routes("profile")
-    object Search : Routes("search")
-    object Splash : Routes("splash")
-    object AddThreads : Routes("add_threads")
-    object BottomNav : Routes("bottom_nav")
-
+enum class Routes(val routes:String) {
+    Home("home"),
+    Notification("notification"),
+    profile("profile"),
+    Search("search"),
+    Splash("splash"),
+    AddThreads("add_threads"),
+    BottomNav("bottom_nav")
 }
