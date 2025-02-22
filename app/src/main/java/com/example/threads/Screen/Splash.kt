@@ -14,16 +14,24 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun Splash(navController: NavHostController) {
+
     ConstraintLayout(modifier = Modifier.fillMaxSize()) {
+
         val image = createRef()
+
         Image(
+
             painter = painterResource(id = R.drawable.logo),
+
             contentDescription = "Logo",
+
             modifier = Modifier.constrainAs(image) {
+
                 top.linkTo(parent.top)
                 bottom.linkTo(parent.bottom)
                 start.linkTo(parent.start)
                 end.linkTo(parent.end)
+
             }
         )
     }
