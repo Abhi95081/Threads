@@ -7,5 +7,8 @@ enum class Routes(val routes:String) {
     Search("search"),
     Splash("splash"),
     AddThreads("add_threads"),
-    BottomNav("bottom_nav")
+    BottomNav("bottom_nav"),
+    Login("login"),
+    Register("register")
+
 }

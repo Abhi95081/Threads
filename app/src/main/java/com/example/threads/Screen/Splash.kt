@@ -10,6 +10,8 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavHostController
 import com.example.threads.Navigation.Routes
 import com.example.threads.R
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.delay
 
 @Composable
@@ -38,7 +40,21 @@ fun Splash(navController: NavHostController) {
 
     LaunchedEffect(Unit) {
         delay(3000)
-        navController.navigate(Routes.BottomNav.routes)
+
+        if(FirebaseAuth.getInstance().currentUser != null)
+             navController.navigate(Routes.BottomNav.routes){
+                 popUpTo(navController.graph.startDestinationId) {
+                     inclusive = true
+                 }
+                 launchSingleTop = true
+             }
+        else
+            navController.navigate(Routes.Login.routes){
+                popUpTo(navController.graph.startDestinationId) {
+                    inclusive = true
+                }
+                launchSingleTop = true
+            }
     }
 
     //Now the Fire Base is Begin.
