@@ -23,6 +23,28 @@ class AuthViewModel : ViewModel() {
         _firebaseUser.value = auth.currentUser
     }
 
+    fun login(email : String, password : String){
+        auth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener {
+                if(it.isSuccessful){
+                    _firebaseUser.postValue(auth.currentUser)
+                }else{
+                    _error.postValue("Something went wrong")
+                }
+            }
+    }
+
+    fun register(email : String, password : String,name : String,bio : String,username : String){
+        auth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener {
+                if(it.isSuccessful){
+                    _firebaseUser.postValue(auth.currentUser)
+                }else{
+                    _error.postValue("Something went wrong")
+                }
+            }
+    }
+
     // 1:00:50
     //https://console.firebase.google.com/project/thread-40271/overview
 }
