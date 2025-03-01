@@ -1,6 +1,7 @@
 package com.example.threads.Screen
 
 import android.net.Uri
+import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -26,6 +27,16 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.threads.Navigation.Routes
 import com.example.threads.R
+import android.Manifest
+import android.content.pm.PackageManager
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.rememberAsyncImagePainter
+import com.example.threads.viewmodel.AuthViewModel
+import com.google.firebase.auth.AuthResult
+
 
 @Composable
 fun Register(navHostController: NavHostController) {
@@ -36,14 +47,25 @@ fun Register(navHostController: NavHostController) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
+    //view Model
+    val authViewModel : AuthViewModel = viewModel()
+    //val firebaseUser by authViewModel.firebaseUser.observeForever()
+
  // image
     var imageuri by remember { mutableStateOf<Uri?>(null) }
+
+    val permissionToRequest = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
+        Manifest.permission.READ_MEDIA_IMAGES
+    }else{
+        Manifest.permission.READ_EXTERNAL_STORAGE
+    }
+
+    val context = LocalContext.current
 
     val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) {
 
         uri: Uri? ->
         imageuri = uri
-        //1:09:50
     }
     val permissionLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()){
 
@@ -71,15 +93,24 @@ fun Register(navHostController: NavHostController) {
 
         Spacer(modifier = Modifier.height(30.dp))
         
-        Image(painter = painterResource(id = R.drawable.person) , contentDescription = "person",
+        Image(painter = if(imageuri == null) painterResource(id = R.drawable.person)
+            else rememberAsyncImagePainter(model = imageuri),contentDescription = "person",
             modifier = Modifier
                 .size(100.dp)
                 .clip(CircleShape)
                 .background(Color.Gray)
                 .clickable {
 
-                    //Write code
+                    val isGranted = ContextCompat.checkSelfPermission(
+                        context,
+                        permissionToRequest
+                    ) == PackageManager.PERMISSION_GRANTED
 
+                    if (isGranted) {
+                        launcher.launch("image/*")
+                    } else {
+                        permissionLauncher.launch(permissionToRequest)
+                    }
 
                 }, contentScale = ContentScale.Crop)
 
@@ -134,7 +165,16 @@ fun Register(navHostController: NavHostController) {
         Spacer(modifier = Modifier.height(30.dp))
 
         ElevatedButton(
-            onClick = { /* Handle registration */ },
+            onClick = {
+
+                if(name.isEmpty() or email.isEmpty() or bio.isEmpty() or password.isEmpty() || imageuri == null){
+                    Toast.makeText(context,"Fill All Details",Toast.LENGTH_SHORT).show()
+                }else{
+
+                }
+
+
+            },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(

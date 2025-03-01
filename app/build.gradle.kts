@@ -78,4 +78,18 @@ dependencies {
 
     // Constraints Layout dependencies.
     implementation ("androidx.constraintlayout:constraintlayout-compose:1.0.1")
+
+    // Coil for image store and picker from the gallery.
+    implementation("io.coil-kt:coil-compose:2.2.2")
+
+    // viewmodel dependencies
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
+
+    //For ViewModel with LiveData
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.2")
+
+    //runtime live data
+    implementation("androidx.compose.runtime:runtime-livedata:1.5.9")
+
 }
+
