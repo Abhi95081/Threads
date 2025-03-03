@@ -29,6 +29,10 @@ class AuthViewModel : ViewModel() {
     private val _error = MutableLiveData<String>()
     val error : LiveData<String> = _error
 
+
+    private val _Loading = MutableLiveData<Boolean>()
+    val Loading : LiveData<Boolean> = _Loading
+
     init{
         _firebaseUser.value = auth.currentUser
     }
@@ -51,8 +55,10 @@ class AuthViewModel : ViewModel() {
                  username : String,
                  imageuri : Uri,
                  context : Context){
+        _Loading.value = true
         auth.createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener {
+            .addOnCompleteListener { it ->
+                _Loading.value = false
                 if(it.isSuccessful){
                     _firebaseUser.postValue(auth.currentUser)
                     saveImage(email,password,name,bio,username,imageuri,auth.currentUser?.uid,context)
@@ -73,7 +79,6 @@ class AuthViewModel : ViewModel() {
 
         val uploadTask = imageRef.putFile(imageuri)
         uploadTask.addOnSuccessListener {
-
             imageRef.downloadUrl.addOnSuccessListener {
                 saveData(email,password,name,bio,username,it.toString(),uid, context)
             }

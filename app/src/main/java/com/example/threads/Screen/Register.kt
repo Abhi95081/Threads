@@ -40,6 +40,9 @@ import com.google.firebase.auth.AuthResult
 
 @Composable
 fun Register(navHostController: NavHostController) {
+
+
+
     var email by remember { mutableStateOf("") }
     var name by remember { mutableStateOf("") }
     var bio by remember { mutableStateOf("") }
@@ -52,6 +55,9 @@ fun Register(navHostController: NavHostController) {
 
     var imageUri by remember { mutableStateOf<Uri?>(null) }
     val context = LocalContext.current
+
+    //loading
+    val isLoading by authViewModel.Loading.observeAsState(false)
 
     val permissionToRequest = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         Manifest.permission.READ_MEDIA_IMAGES
@@ -166,21 +172,34 @@ fun Register(navHostController: NavHostController) {
 
         Spacer(modifier = Modifier.height(30.dp))
 
-        ElevatedButton(
-            onClick = {
-                if (name.isEmpty() || email.isEmpty() || bio.isEmpty() || password.isEmpty() || imageUri == null) {
-                    Toast.makeText(context, "Please Fill All Details", Toast.LENGTH_SHORT).show()
-                } else {
-                    authViewModel.register(email, password, name, bio, username, imageUri!!, context)
-                }
-            },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(
-                text = "Register here",
-                style = TextStyle(fontWeight = FontWeight.ExtraBold, fontSize = 20.sp),
-                modifier = Modifier.padding(vertical = 6.dp)
-            )
+        if (isLoading) {
+            CircularProgressIndicator()
+        } else {
+            ElevatedButton(
+                onClick = {
+                    if (name.isEmpty() || email.isEmpty() || bio.isEmpty() || password.isEmpty() || imageUri == null) {
+                        Toast.makeText(context, "Please Fill All Details", Toast.LENGTH_SHORT)
+                            .show()
+                    } else {
+                        authViewModel.register(
+                            email,
+                            password,
+                            name,
+                            bio,
+                            username,
+                            imageUri!!,
+                            context
+                        )
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = "Register here",
+                    style = TextStyle(fontWeight = FontWeight.ExtraBold, fontSize = 20.sp),
+                    modifier = Modifier.padding(vertical = 6.dp)
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(10.dp))
