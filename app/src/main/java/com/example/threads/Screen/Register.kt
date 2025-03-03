@@ -30,6 +30,7 @@ import com.example.threads.R
 import android.Manifest
 import android.content.pm.PackageManager
 import android.widget.Toast
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -37,46 +38,45 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.threads.viewmodel.AuthViewModel
 import com.google.firebase.auth.AuthResult
 
-
 @Composable
 fun Register(navHostController: NavHostController) {
-
     var email by remember { mutableStateOf("") }
     var name by remember { mutableStateOf("") }
     var bio by remember { mutableStateOf("") }
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
-    //view Model
-    val authViewModel : AuthViewModel = viewModel()
-    //val firebaseUser by authViewModel.firebaseUser.observeForever()
+    val authViewModel: AuthViewModel = viewModel()
+    val firebaseUser by authViewModel.firebaseUser.observeAsState(null)
+    val error by authViewModel.error.observeAsState("") // Observe error state
 
- // image
-    var imageuri by remember { mutableStateOf<Uri?>(null) }
+    var imageUri by remember { mutableStateOf<Uri?>(null) }
+    val context = LocalContext.current
 
-    val permissionToRequest = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
+    val permissionToRequest = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         Manifest.permission.READ_MEDIA_IMAGES
-    }else{
+    } else {
         Manifest.permission.READ_EXTERNAL_STORAGE
     }
 
-    val context = LocalContext.current
-
-    val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) {
-
-        uri: Uri? ->
-        imageuri = uri
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        imageUri = uri
     }
-    val permissionLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()){
 
-        isGrenter : Boolean ->
-            if(isGrenter){
-
-
-            }else{
-
+    val permissionLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (!isGranted) {
+                Toast.makeText(context, "Permission required to select image", Toast.LENGTH_SHORT).show()
             }
+        }
 
+    LaunchedEffect(firebaseUser) {
+        if (firebaseUser != null) {
+            navHostController.navigate(Routes.BottomNav.routes) {
+                popUpTo(0) { inclusive = true } // Clears the back stack
+                launchSingleTop = true
+            }
+        }
     }
 
     Column(
@@ -92,15 +92,16 @@ fun Register(navHostController: NavHostController) {
         )
 
         Spacer(modifier = Modifier.height(30.dp))
-        
-        Image(painter = if(imageuri == null) painterResource(id = R.drawable.person)
-            else rememberAsyncImagePainter(model = imageuri),contentDescription = "person",
+
+        Image(
+            painter = if (imageUri == null) painterResource(id = R.drawable.person)
+            else rememberAsyncImagePainter(model = imageUri),
+            contentDescription = "person",
             modifier = Modifier
                 .size(100.dp)
                 .clip(CircleShape)
                 .background(Color.Gray)
                 .clickable {
-
                     val isGranted = ContextCompat.checkSelfPermission(
                         context,
                         permissionToRequest
@@ -111,8 +112,9 @@ fun Register(navHostController: NavHostController) {
                     } else {
                         permissionLauncher.launch(permissionToRequest)
                     }
-
-                }, contentScale = ContentScale.Crop)
+                },
+            contentScale = ContentScale.Crop
+        )
 
         Spacer(modifier = Modifier.height(50.dp))
 
@@ -166,14 +168,11 @@ fun Register(navHostController: NavHostController) {
 
         ElevatedButton(
             onClick = {
-
-                if(name.isEmpty() or email.isEmpty() or bio.isEmpty() or password.isEmpty() || imageuri == null){
-                    Toast.makeText(context,"Fill All Details",Toast.LENGTH_SHORT).show()
-                }else{
-
+                if (name.isEmpty() || email.isEmpty() || bio.isEmpty() || password.isEmpty() || imageUri == null) {
+                    Toast.makeText(context, "Please Fill All Details", Toast.LENGTH_SHORT).show()
+                } else {
+                    authViewModel.register(email, password, name, bio, username, imageUri!!, context)
                 }
-
-
             },
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -184,13 +183,18 @@ fun Register(navHostController: NavHostController) {
             )
         }
 
-        Spacer(modifier = Modifier.height(30.dp))
+        Spacer(modifier = Modifier.height(10.dp))
+
+        if (error.isNotEmpty()) {
+            Text(text = error, color = Color.Red, fontSize = 14.sp)
+        }
+
+        Spacer(modifier = Modifier.height(20.dp))
+
         TextButton(
             onClick = {
                 navHostController.navigate(Routes.Login.routes) {
-                    popUpTo(navHostController.graph.startDestinationId) {
-                        inclusive = true
-                    }
+                    popUpTo(navHostController.graph.startDestinationId)
                     launchSingleTop = true
                 }
             }
