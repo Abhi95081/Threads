@@ -22,7 +22,7 @@ import com.example.threads.Navigation.Routes
 import com.example.threads.model.BottomNavItem
 
 @Composable
-fun BottomNav(navHostController: NavHostController) {
+fun BottomNav(navController: NavHostController) {
 
     val navController1 = rememberNavController()
     
@@ -41,7 +41,7 @@ fun BottomNav(navHostController: NavHostController) {
                 Notification()
             }
             composable(Routes.profile.routes) {
-                Profile()
+                Profile(navController)
             }
             composable(Routes.AddThreads.routes) {
                 AddThreads()

@@ -78,7 +78,7 @@ fun Register(navHostController: NavHostController) {
     LaunchedEffect(firebaseUser) {
         if (firebaseUser != null) {
             navHostController.navigate(Routes.BottomNav.routes) {
-                popUpTo(0) { inclusive = true } // Clears the back stack
+                popUpTo(navHostController.graph.startDestinationId)  // Clears the back stack
                 launchSingleTop = true
             }
         }
@@ -86,7 +86,7 @@ fun Register(navHostController: NavHostController) {
 
     Column(
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxSize()
             .padding(20.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
