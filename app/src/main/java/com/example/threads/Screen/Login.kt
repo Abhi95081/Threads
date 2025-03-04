@@ -57,8 +57,13 @@ fun Login(navController: NavController) {
         Spacer(modifier = Modifier.height(30.dp))
 
         ElevatedButton(
-            onClick = { /* Handle login */ },
-            modifier = Modifier.fillMaxWidth()
+            onClick = {
+                navController.navigate(Routes.BottomNav.routes) {
+                    popUpTo(navController.graph.startDestinationId)
+                    launchSingleTop = true
+                }
+            }
+
         ) {
             Text(
                 text = "Login",

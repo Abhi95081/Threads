@@ -42,7 +42,6 @@ import com.google.firebase.auth.AuthResult
 fun Register(navHostController: NavHostController) {
 
 
-
     var email by remember { mutableStateOf("") }
     var name by remember { mutableStateOf("") }
     var bio by remember { mutableStateOf("") }
