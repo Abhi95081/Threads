@@ -10,5 +10,4 @@ enum class Routes(val routes:String) {
     BottomNav("bottom_nav"),
     Login("login"),
     Register("register")
-
 }

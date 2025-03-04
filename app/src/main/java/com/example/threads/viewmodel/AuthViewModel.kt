@@ -19,9 +19,9 @@ import java.util.UUID
 
 class AuthViewModel : ViewModel() {
 
-    val auth = FirebaseAuth.getInstance()
+    private val auth = FirebaseAuth.getInstance()
     private val db = FirebaseDatabase.getInstance()
-    val userRef = db.getReference("users")
+    private val userRef = db.getReference("users")
 
     private val storageRef = Firebase.storage.reference
     private val imageRef = storageRef.child("users/${UUID.randomUUID()}.jpg")
@@ -105,7 +105,6 @@ class AuthViewModel : ViewModel() {
                 saveData(email,password,name,bio,username,it.toString(),uid, context)
             }
         }
-
     }
 
     private fun saveData(
@@ -128,9 +127,6 @@ class AuthViewModel : ViewModel() {
             .addOnFailureListener {
 
             }
-
-
-
     }
 
     //log out

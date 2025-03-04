@@ -91,5 +91,8 @@ dependencies {
     //runtime live data
     implementation("androidx.compose.runtime:runtime-livedata:1.5.9")
 
+    //password eye
+    implementation("androidx.compose.material:material-icons-extended:1.5.4") // Use latest version
+
 }
 
