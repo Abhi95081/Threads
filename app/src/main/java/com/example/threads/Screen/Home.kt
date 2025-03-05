@@ -10,11 +10,6 @@ import androidx.compose.ui.Modifier
 
 @Composable
 fun Home() {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text("Home page")
-    }
+
+    //2:25:00
 }
