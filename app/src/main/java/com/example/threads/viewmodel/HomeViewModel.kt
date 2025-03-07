@@ -18,57 +18,69 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.storage
 import java.util.UUID
-
 class HomeViewModel : ViewModel() {
 
     private val db = FirebaseDatabase.getInstance()
-     val thread = db.getReference("threads")
+    private val threadRef = db.getReference("threads")
 
-    private val _threadsAndUsers = MutableLiveData<List<Pair<Threadmodel, UserModel>>>()
+    private var _threadsAndUsers = MutableLiveData<List<Pair<Threadmodel, UserModel>>>()
     val threadsAndUsers: LiveData<List<Pair<Threadmodel, UserModel>>> = _threadsAndUsers
 
-    private fun fetchThreadsAndUsers(onResult: (List<Pair<Threadmodel, UserModel>>) -> Unit) {
-        thread.addValueEventListener(object : ValueEventListener {
+    init {
+        fetchThreadsAndUsers()
+    }
+
+    private fun fetchThreadsAndUsers() {
+        threadRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-
                 val result = mutableListOf<Pair<Threadmodel, UserModel>>()
+                val totalThreads = snapshot.childrenCount.toInt()
 
-                for(threadSnapshot in snapshot.children) {
-                      val thread = threadSnapshot.getValue(Threadmodel::class.java)
-                    thread.let {
-                        fetchUserFromThread(it!!) {
-                            user ->
-                            result.add(0,it to user)
+                if (totalThreads == 0) {
+                    _threadsAndUsers.value = result
+                    return
+                }
 
-                            if(result.size == snapshot.childrenCount.toInt()) {
-                                onResult(result)
+                var processedThreads = 0
+
+                for (threadSnapshot in snapshot.children) {
+                    val thread = threadSnapshot.getValue(Threadmodel::class.java)
+                    thread?.let { threadModel ->
+                        fetchUserFromThread(threadModel) { user ->
+                            result.add(threadModel to user)
+                            processedThreads++
+
+                            // Update LiveData once all threads are processed
+                            if (processedThreads == totalThreads) {
+                                _threadsAndUsers.value = result
                             }
+                        }
+                    } ?: run {
+                        processedThreads++
+                        if (processedThreads == totalThreads) {
+                            _threadsAndUsers.value = result
                         }
                     }
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
-
+                // Handle database error properly (optional logging)
             }
-
         })
     }
 
-    fun fetchUserFromThread(thread: Threadmodel, onResult: (UserModel) -> Unit) {
-        db.getReference("threads").child(thread.userId)
-            .addListenerForSingleValueEvent(object :ValueEventListener{
+    private fun fetchUserFromThread(thread: Threadmodel, onResult: (UserModel) -> Unit) {
+        db.getReference("users").child(thread.userId)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val user = snapshot.getValue(UserModel::class.java)
-                    user?.let { onResult }
+                    onResult(user ?: UserModel("Unknown", "")) // Provide a default user if null
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-
+                    // Handle error
                 }
-
             })
-
     }
 }
-

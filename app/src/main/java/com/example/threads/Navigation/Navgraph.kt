@@ -26,7 +26,7 @@ fun Navgraph(navController: NavHostController) {
             Splash(navController)
         }
         composable(Routes.Home.routes) {
-            Home()
+            Home(navController)
         }
         composable(Routes.Search.routes) {
             Search()

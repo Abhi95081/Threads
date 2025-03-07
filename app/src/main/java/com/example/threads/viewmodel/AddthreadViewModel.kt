@@ -21,20 +21,14 @@ import java.util.UUID
 
 class AddthreadViewModel : ViewModel() {
 
-    private val db = FirebaseDatabase.getInstance()
-    private val userRef = db.getReference("threads")
+    val db = FirebaseDatabase.getInstance()
+    val userRef = db.getReference("threads")
 
     private val storageRef = Firebase.storage.reference
     private val imageRef = storageRef.child("threads/${UUID.randomUUID()}.jpg")
 
     private val _isPosted = MutableLiveData<Boolean>()
     val isPosted : LiveData<Boolean> = _isPosted
-
-
-    private val _Loading = MutableLiveData<Boolean>()
-    val Loading : LiveData<Boolean> = _Loading
-
-
 
 
      fun saveImage(
