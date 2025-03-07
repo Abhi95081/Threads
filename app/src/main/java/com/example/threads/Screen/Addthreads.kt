@@ -87,7 +87,7 @@ fun AddThreads(navHostController: NavHostController) {
         if (isPosted!!) {
             thread = ""
             imageUri = null
-            Toast.makeText(context, "Thread Add", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Thread Added", Toast.LENGTH_SHORT).show()
 
             navHostController.navigate(Routes.Home.routes) {
                 popUpTo(Routes.AddThreads.routes) {
@@ -124,7 +124,7 @@ Image(painter = painterResource1(id = drawable.baseline_close_24),
         Text(
             text ="Add Thread", style = TextStyle(
                 fontSize = 24.sp,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.ExtraBold
             ) , modifier = Modifier.constrainAs(text){
                 top.linkTo(crossPic.top)
                 start.linkTo(crossPic.end, margin = 12.dp)
@@ -152,7 +152,7 @@ Image(painter = painterResource1(id = drawable.baseline_close_24),
                 bottom.linkTo(logo.bottom)
             }
         )
-        BasicTextFieldWithHint(hint = "Start a thread ...", value = thread , onValueChange = {thread} , modifier = Modifier
+        BasicTextFieldWithHint(hint = "Start a thread ...", value = thread , onValueChange = {thread = it} , modifier = Modifier
             .constrainAs(editText) {
                 top.linkTo(userName.bottom)
                 start.linkTo(userName.start)
